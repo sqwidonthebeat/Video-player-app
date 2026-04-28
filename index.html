@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://adsgram.ai/sdk.js"></script>
+    <style>
+        body { background: #000; color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; }
+        #ad-box { text-align: center; }
+        .btn { background: #248bcf; border: none; color: white; padding: 15px 30px; border-radius: 10px; cursor: pointer; font-size: 18px; }
+        video { display: none; width: 100%; max-height: 90vh; }
+    </style>
+</head>
+<body>
+    <div id="ad-box">
+        <h3>Video Locked</h3>
+        <p>Watch a short ad to play this 30s part.</p>
+        <button class="btn" onclick="showAd()">🔓 Unlock & Play</button>
+    </div>
+    <video id="player" controls playsinline></video>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // REPLACEME: Get your Block ID from Adsgram.ai
+        const AdController = window.Adsgram.init({ blockId: "YOUR_ADS_ID_HERE" });
+
+        function showAd() {
+            AdController.show().then(() => {
+                const params = new URLSearchParams(window.location.search);
+                const videoUrl = `https://YOUR_STORAGE_URL/segments/${params.get('vid')}_part_${params.get('part')}.mp4`;
+                
+                document.getElementById('ad-box').style.display = 'none';
+                const player = document.getElementById('player');
+                player.style.display = 'block';
+                player.src = videoUrl;
+                player.play();
+            }).catch(() => {
+                alert("You must watch the ad to unlock the video.");
+            });
+        }
+    </script>
+</body>
+</html>
